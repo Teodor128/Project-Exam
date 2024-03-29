@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Create your views here.
@@ -19,6 +20,7 @@ def recipe_detail(request, recipe_id):
     return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
 
 
+@login_required
 def user_profile(request):
     user = request.user
     return render(request, 'recipes/user_profile.html', {'user': user})
