@@ -5,3 +5,19 @@ from .models import Recipe, Review
 
 admin.site.register(Recipe)
 admin.site.register(Review)
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'created_at', 'updated_at')
+    search_fields = ('title', 'author__username')
+    list_filter = ('author', 'created_at')
+    ordering = ('-created_at',)
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'user', 'rating', 'created_at')
+    search_fields = ('recipe__title', 'user__username')
+    list_filter = ('rating', 'created_at')
+    ordering = ('-created_at',)
