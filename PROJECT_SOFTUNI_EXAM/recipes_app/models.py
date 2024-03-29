@@ -4,6 +4,18 @@ from django.db import models
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.db import models
+
+
+class MyModel(models.Model):
+    field1 = models.CharField(max_length=100)
+    field2 = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        # Custom save method to enforce business rules
+        if self.field2 > 0:
+            super().save(*args, **kwargs)
+
 
 class Recipe(models.Model):
     title = models.CharField(max_length=100)

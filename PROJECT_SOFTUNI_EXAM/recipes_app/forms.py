@@ -2,6 +2,14 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
+from django import forms
+
+
+class MyForm(forms.Form):
+    field1 = forms.CharField(label='Field 1', max_length=100)
+    field2 = forms.IntegerField(label='Field 2')
+    field3 = forms.BooleanField(label='Field 3', required=False)
+
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField()

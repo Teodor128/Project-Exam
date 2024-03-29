@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -8,8 +9,29 @@ from django.contrib.auth import login, logout
 
 from .forms import UserRegistrationForm, UserLoginForm
 from .models import Recipe
+from django.shortcuts import render, redirect
+from .forms import MyForm
 
 
+def my_view(request):
+    if request.method == 'POST':
+        form = MyForm(request.POST)
+        if form.is_valid():
+            # Process form data
+            field1 = form.cleaned_data['field1']
+            field2 = form.cleaned_data['field2']
+            field3 = form.cleaned_data['field3']
+            # Process the form data as needed
+            messages.success(request, 'Form submission successful.')
+            return redirect('success_page')
+        else:
+            # If the form is invalid, handle the errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'Error in {field}: {error}')
+    else:
+        form = MyForm()
+    return render(request, 'my_template.html', {'form': form})
 def recipe_list(request):
     recipes = Recipe.objects.all()
     return render(request, 'recipes/recipe_list.html', {'recipes': recipes})
