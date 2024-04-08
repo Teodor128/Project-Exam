@@ -21,6 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from PROJECT_SOFTUNI_EXAM.recipes_app import views
+from PROJECT_SOFTUNI_EXAM.recipes_app.views import recipe_search
 
 urlpatterns = [
     path('', views.recipe_list, name='recipe_list'),
@@ -37,6 +38,10 @@ urlpatterns = [
 
     path('recipe/<int:recipe_id>/', views.recipe_detail, name='recipe_detail'),
     path('recipe/<int:recipe_id>/update/', views.update_recipe, name='update_recipe'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('recipe/<int:recipe_id>/add_review/', views.add_review, name='add_review'),
+    path('recipe/search/', recipe_search, name='recipe_search'),
+
 
 
 ]

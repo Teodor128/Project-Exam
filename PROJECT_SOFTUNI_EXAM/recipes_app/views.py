@@ -7,10 +7,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 
-from PROJECT_SOFTUNI_EXAM.recipes_app.forms import UserRegistrationForm, UserLoginForm, RecipeForm
-from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe
+from PROJECT_SOFTUNI_EXAM.recipes_app.forms import UserRegistrationForm, UserLoginForm, RecipeForm, ProfileForm, \
+    ReviewForm, RecipeSearchForm
+from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe, Profile, Review
 from django.shortcuts import render, redirect
 from PROJECT_SOFTUNI_EXAM.recipes_app.forms import MyForm
+from django.db import models
+from django.contrib.auth.models import User
 
 
 def my_view(request):
@@ -46,21 +49,48 @@ def recipe_detail(request, recipe_id)
 
 
 def recipe_detail(request, recipe_id):
-    # Retrieve the recipe object using its id (assuming id is the primary key)
     recipe = get_object_or_404(Recipe, id=recipe_id)
+    reviews = Review.objects.filter(recipe=recipe)
 
-    # Pass the recipe object to the template context
+    # Define a list of rating icons based on the rating value
+    for review in reviews:
+        review.rating_icons = range(review.rating)
+
     context = {
-        'recipe': recipe
+        'recipe': recipe,
+        'reviews': reviews
     }
 
-    # Render the template with the recipe detail
     return render(request, 'recipes/recipe_detail.html', context)
+
 
 @login_required
 def user_profile(request):
-    user = request.user
-    return render(request, 'recipes/user_profile.html', {'user': user})
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        profile = None  # Handle the case where profile does not exist
+
+    return render(request, 'recipes/user_profile.html', {'profile': profile})
+
+
+@login_required
+def edit_profile(request):
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        profile = Profile(user=request.user)  # Create a new Profile if it doesn't exist
+        profile.save()
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('user_profile')  # Redirect to user profile after editing
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'recipes/edit_profile.html', {'form': form})
 
 
 def register(request):
@@ -122,6 +152,7 @@ def update_recipe(request, recipe_id):
     return render(request, 'recipes/recipe_update.html', {'form': form})
 '''
 
+
 @login_required()
 def update_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)  # Assuming 'id' is the primary key field
@@ -135,3 +166,46 @@ def update_recipe(request, recipe_id):
         form = RecipeForm(instance=recipe)
 
     return render(request, 'recipes/recipe_update.html', {'form': form, 'recipe': recipe})
+
+
+def add_review(request, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.recipe = recipe
+            review.user = request.user
+            review.save()
+            return redirect('recipe_detail', recipe_id=recipe_id)
+    else:
+        form = ReviewForm()
+
+    return render(request, 'recipes/add_review.html', {'form': form, 'recipe': recipe})
+
+
+def get_reviews_for_recipe(recipe):
+    return Review.objects.filter(recipe=recipe)
+
+
+def get_reviews_by_user(user):
+    return Review.objects.filter(user=user)
+
+
+def recipe_search(request):
+    if request.method == 'GET':
+        form = RecipeSearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data.get('query')
+            # Filter recipes based on the search query
+            recipes = Recipe.objects.filter(title__icontains=query)
+            context = {
+                'form': form,
+                'recipes': recipes,
+                'query': query
+            }
+            return render(request, 'recipes/recipe_search_results.html', context)
+    else:
+        form = RecipeSearchForm()
+    return render(request, 'recipes/recipe_search.html', {'form': form})

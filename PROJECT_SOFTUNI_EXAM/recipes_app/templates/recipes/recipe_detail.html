@@ -1,3 +1,4 @@
+<!-- recipe_detail.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ recipe.title }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* Custom CSS Styles */
         body {
@@ -20,6 +22,17 @@
         .recipe-details {
             margin-bottom: 20px;
         }
+        .review-section {
+            margin-top: 40px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+        .review-item {
+            margin-bottom: 20px;
+        }
+        .rating {
+            color: orange; /* Color for rating icons */
+        }
     </style>
 </head>
 <body>
@@ -33,6 +46,9 @@
         {% endif %}
 
         <div class="recipe-details">
+            <p><strong>Description:</strong></p>
+            <p>{{ recipe.description }}</p>
+
             <p><strong>Ingredients:</strong></p>
             <p>{{ recipe.ingredients }}</p>
 
@@ -43,6 +59,32 @@
         </div>
 
         <a href="{% url 'update_recipe' recipe_id=recipe.id %}" class="btn btn-primary">Update Recipe</a>
+
+        <!-- Reviews Section -->
+        <div class="review-section">
+            <h2>Reviews</h2>
+            {% if reviews %}
+                <ul class="list-unstyled">
+                    {% for review in reviews %}
+                        <li class="review-item">
+                            <p><strong>Reviewed by:</strong> {{ review.user.username }}</p>
+                            <p><strong>Rating:</strong>
+                                {% for icon in review.rating_icons %}
+                                    <i class="fas fa-utensils rating"></i> <!-- Use utensil icon (font awesome) for rating -->
+                                {% endfor %}
+                            </p>
+                            <p><strong>Comment:</strong> {{ review.comment }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No reviews yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Link to add a new review -->
+        <a href="{% url 'add_review' recipe_id=recipe.id %}" class="btn btn-primary">Add Review</a>
     </div>
 </body>
 </html>
+

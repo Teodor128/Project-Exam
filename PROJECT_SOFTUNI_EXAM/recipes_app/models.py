@@ -34,11 +34,28 @@ class Recipe(models.Model):
 
 
 class Review(models.Model):
+    RATING_CHOICES = (
+        (1, 'One'),
+        (2, 'Two'),
+        (3, 'Three'),
+        (4, 'Four'),
+        (5, 'Five'),
+    )
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField()
+    rating = models.IntegerField(choices=RATING_CHOICES)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Review for {self.recipe.title} by {self.user.username}"
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"

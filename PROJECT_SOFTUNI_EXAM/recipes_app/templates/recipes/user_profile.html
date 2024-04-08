@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <!-- Add necessary stylesheets and scripts -->
 </head>
 <body>
-    <h1>User Profile</h1>
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <!-- Add more user details as needed -->
+    <div class="container">
+        <h1>User Profile</h1>
+        <p>Username: {{ profile.user.username }}</p>
+        <p>Bio: {{ profile.bio }}</p>
+        <!-- Display other profile details as needed -->
+
+        <a href="{% url 'edit_profile' %}" class="btn btn-warning orange-btn">Edit Profile</a>
+    </div>
 </body>
 </html>

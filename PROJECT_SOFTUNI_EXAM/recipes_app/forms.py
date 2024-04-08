@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from django import forms
 
-from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe
+from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe, Profile, Review
 
 
 class MyForm(forms.Form):
@@ -31,3 +31,19 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ['title', 'ingredients', 'instructions', 'image']
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'profile_picture',] #date of birth
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+
+
+class RecipeSearchForm(forms.Form):
+    query = forms.CharField(label='Search Recipes', max_length=100)
