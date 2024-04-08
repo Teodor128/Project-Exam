@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 from django import forms
 
+from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe
+
 
 class MyForm(forms.Form):
     field1 = forms.CharField(label='Field 1', max_length=100)
@@ -23,3 +25,9 @@ class UserLoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+
+class RecipeForm(forms.ModelForm):
+    class Meta:
+        model = Recipe
+        fields = ['title', 'ingredients', 'instructions', 'image']

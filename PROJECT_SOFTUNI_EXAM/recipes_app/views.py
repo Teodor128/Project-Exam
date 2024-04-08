@@ -1,16 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 
-from .forms import UserRegistrationForm, UserLoginForm
-from .models import Recipe
+from PROJECT_SOFTUNI_EXAM.recipes_app.forms import UserRegistrationForm, UserLoginForm, RecipeForm
+from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe
 from django.shortcuts import render, redirect
-from .forms import MyForm
+from PROJECT_SOFTUNI_EXAM.recipes_app.forms import MyForm
 
 
 def my_view(request):
@@ -31,16 +31,31 @@ def my_view(request):
                     messages.error(request, f'Error in {field}: {error}')
     else:
         form = MyForm()
-    return render(request, 'my_template.html', {'form': form})
+    return render(request, 'recipes/my_template.html', {'form': form})
+
+
 def recipe_list(request):
     recipes = Recipe.objects.all()
     return render(request, 'recipes/recipe_list.html', {'recipes': recipes})
 
+'''''
+def recipe_detail(request, recipe_id)
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
+'''''
+
 
 def recipe_detail(request, recipe_id):
-    recipe = Recipe.objects.get(id=recipe_id)
-    return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
+    # Retrieve the recipe object using its id (assuming id is the primary key)
+    recipe = get_object_or_404(Recipe, id=recipe_id)
 
+    # Pass the recipe object to the template context
+    context = {
+        'recipe': recipe
+    }
+
+    # Render the template with the recipe detail
+    return render(request, 'recipes/recipe_detail.html', context)
 
 @login_required
 def user_profile(request):
@@ -75,3 +90,48 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('recipe_list')
+
+
+@login_required
+def add_recipe(request):
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Save the new recipe to the database
+            recipe = form.save(commit=False)
+            recipe.author = request.user  # Assign the current user as the recipe author
+            recipe.save()
+            return redirect('recipe_list')  # Redirect to recipe list page after adding the recipe
+    else:
+        form = RecipeForm()
+    return render(request, 'recipes/add_recipe.html', {'form': form})
+
+'''''
+@login_required
+def update_recipe(request, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, request.FILES, instance=recipe)
+        if form.is_valid():
+            form.save()
+            return redirect('recipe_detail', recipe_id=recipe_id)
+    else:
+        form = RecipeForm(instance=recipe)
+
+    return render(request, 'recipes/recipe_update.html', {'form': form})
+'''
+
+@login_required()
+def update_recipe(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)  # Assuming 'id' is the primary key field
+
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, request.FILES, instance=recipe)
+        if form.is_valid():
+            form.save()
+            return redirect('recipe_detail', recipe_id=recipe.id)
+    else:
+        form = RecipeForm(instance=recipe)
+
+    return render(request, 'recipes/recipe_update.html', {'form': form, 'recipe': recipe})

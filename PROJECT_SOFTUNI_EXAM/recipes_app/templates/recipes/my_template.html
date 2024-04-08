@@ -1,10 +1,41 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Form</title>
-    <!-- Include any CSS or external libraries here -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: orange;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: orange;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff9900;
+        }
+    </style>
 </head>
 <body>
     <h1>My Form</h1>
@@ -13,6 +44,5 @@
         {{ form.as_p }}
         <button type="submit">Submit</button>
     </form>
-    <!-- Include any JavaScript or additional HTML content here -->
 </body>
 </html>

@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 from PROJECT_SOFTUNI_EXAM.recipes_app import views
 
@@ -27,4 +29,18 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
+    path('add/', views.add_recipe, name='add_recipe'),
+
+    path('', views.recipe_list, name='recipe_list'),
+    #path('recipe/<int:recipe_id>/', views.recipe_detail, name='recipe_detail'),
+    path('add/', views.add_recipe, name='add_recipe'),
+
+    path('recipe/<int:recipe_id>/', views.recipe_detail, name='recipe_detail'),
+    path('recipe/<int:recipe_id>/update/', views.update_recipe, name='update_recipe'),
+
+
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

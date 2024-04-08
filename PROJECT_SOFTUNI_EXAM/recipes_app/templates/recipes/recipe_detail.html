@@ -4,11 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ recipe.title }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .recipe-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .recipe-details {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ recipe.title }}</h1>
-    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
-    <!-- Add more details as needed -->
+    <div class="container">
+        <h1>{{ recipe.title }}</h1>
+
+        {% if recipe.image %}
+            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe-image">
+        {% else %}
+            <p>No image available</p>
+        {% endif %}
+
+        <div class="recipe-details">
+            <p><strong>Ingredients:</strong></p>
+            <p>{{ recipe.ingredients }}</p>
+
+            <p><strong>Instructions:</strong></p>
+            <p>{{ recipe.instructions }}</p>
+
+            <p><strong>Author:</strong> {{ recipe.author.username }}</p>
+        </div>
+
+        <a href="{% url 'update_recipe' recipe_id=recipe.id %}" class="btn btn-primary">Update Recipe</a>
+    </div>
 </body>
 </html>

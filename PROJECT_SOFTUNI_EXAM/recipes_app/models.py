@@ -17,12 +17,16 @@ class MyModel(models.Model):
             super().save(*args, **kwargs)
 
 '''
+
+
 class Recipe(models.Model):
+
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     ingredients = models.TextField()
     instructions = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='recipe_images/', blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
