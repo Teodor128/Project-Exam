@@ -29,6 +29,13 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to='recipe_images/', blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def get_first_image_url(self):
+        first_image = self.recipeimage_set.first()
+        if first_image:
+            return first_image.image.url
+        else:
+            return '/path/to/default_image.jpg'
+
     def __str__(self):
         return self.title
 
@@ -59,3 +66,8 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Profile of {self.user.username}"
+
+
+class RecipeImage(models.Model):
+    recipe = models.ForeignKey('recipes_app.Recipe', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='recipe_images/', default='default_image.jpg')  # Set default image filename

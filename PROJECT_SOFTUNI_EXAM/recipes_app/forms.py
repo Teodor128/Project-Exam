@@ -3,8 +3,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
 from django import forms
+from django.forms import inlineformset_factory
+from multiupload.fields import MultiFileField
 
-from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe, Profile, Review
+from PROJECT_SOFTUNI_EXAM.recipes_app.models import Recipe, Profile, Review, RecipeImage
 
 
 class MyForm(forms.Form):
@@ -31,6 +33,10 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ['title', 'ingredients', 'instructions', 'image']
+        widgets = {
+            'ingredients': forms.Textarea(attrs={'rows': 3}),
+            'instructions': forms.Textarea(attrs={'rows': 5}),
+        }
 
 
 class ProfileForm(forms.ModelForm):
@@ -47,3 +53,20 @@ class ReviewForm(forms.ModelForm):
 
 class RecipeSearchForm(forms.Form):
     query = forms.CharField(label='Search Recipes', max_length=100)
+
+
+class RecipeImageForm(forms.ModelForm):
+    is_main = forms.BooleanField(label='Main Image', required=False)
+
+    class Meta:
+        model = RecipeImage
+        fields = ['image', 'is_main']
+
+
+RecipeImageFormSet = inlineformset_factory(
+    parent_model=Recipe,
+    model=RecipeImage,
+    form=RecipeImageForm,
+    extra=3,  # Allow up to 3 extra image upload fields
+    can_delete=False  # Allow deletion of existing images if needed
+)

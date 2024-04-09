@@ -41,7 +41,7 @@ urlpatterns = [
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('recipe/<int:recipe_id>/add_review/', views.add_review, name='add_review'),
     path('recipe/search/', recipe_search, name='recipe_search'),
-
+    path('admin/', admin.site.urls),
 
 
 ]

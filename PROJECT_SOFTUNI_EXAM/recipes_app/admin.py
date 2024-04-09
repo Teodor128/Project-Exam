@@ -19,3 +19,5 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ('recipe__title', 'user__username')
     list_filter = ('rating', 'created_at')
     ordering = ('-created_at',)
+
+#SuperUser - Username: Teodor128 P_w: Password email teotodorov07@gmail.com

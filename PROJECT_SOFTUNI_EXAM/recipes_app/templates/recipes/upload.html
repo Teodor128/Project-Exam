@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Images</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Images</h1>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ formset.management_form }}
+
+            {% for form in formset %}
+                <div class="form-group">
+                    <label for="{{ form.image.id_for_label }}">Image</label>
+                    {{ form.image }}
+                    <br>
+                    <label for="{{ form.is_main.id_for_label }}">Main Image</label>
+                    {{ form.is_main }}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">Upload Images</button>
+        </form>
+
+        {% if success_message %}
+            <div class="alert alert-success mt-3" role="alert">
+                {{ success_message }}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
