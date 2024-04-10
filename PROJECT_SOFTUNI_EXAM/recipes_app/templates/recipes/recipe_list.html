@@ -4,52 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe List</title>
+    <!-- Link to Google Fonts (Poppins and Lobster) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lobster&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Custom CSS Styles */
-       body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-    }
-    .recipe-item {
-        margin-bottom: 20px;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        background-color: #fff9e6; /* Slightly yellow background */
-    }
-    .recipe-image {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-    .no-image {
-        width: 100px;
-        height: 100px;
-        background-color: #f0f0f0;
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #888;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        h1 {
+            font-family: 'Lobster', cursive;
+            font-size: 48px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .orange-btn {
+            background-color: #FFA500;
+            color: #fff;
+            border-color: #FFA500;
+        }
+        .orange-btn:hover {
+            background-color: #FF8C00;
+            border-color: #FF8C00;
+        }
+        .recipe-item {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+        .recipe-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .recipe-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .no-image {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1>Superior Delicious</h1>
+
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1>Recipe List</h1>
-            <div>
-                {% if request.user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="btn btn-danger orange-btn">Logout</a>
-                    <a href="{% url 'user_profile' %}" class="btn btn-info orange-btn ml-2">View Profile</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-primary orange-btn mr-2">Login</a>
-                    <a href="{% url 'register' %}" class="btn btn-secondary orange-btn">Register</a>
-                {% endif %}
-            </div>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="btn btn-danger orange-btn">Logout</a>
+                <a href="{% url 'user_profile' %}" class="btn btn-info orange-btn ml-2">View Profile</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary orange-btn mr-2">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-secondary orange-btn">Register</a>
+            {% endif %}
         </div>
 
         <!-- Search Form with Client-Side Validation -->
@@ -65,24 +93,24 @@
 
         <!-- Recipe List -->
         {% if recipes %}
-           <div class="row">
-        {% for recipe in recipes %}
-            <div class="col-md-4">
-                <a href="{% url 'recipe_detail' recipe_id=recipe.pk %}" class="text-decoration-none">
-                    <div class="recipe-item">
-                        {% if recipe.recipeimage_set.all %}
-                            {% with first_image=recipe.recipeimage_set.first %}
-                                <img src="{{ first_image.image.url }}" alt="{{ recipe.title }}" class="recipe-image">
-                            {% endwith %}
-                        {% else %}
-                            <div class="no-image">No Image</div>
-                        {% endif %}
-                        <h3>{{ recipe.title }}</h3>
+            <div class="row">
+                {% for recipe in recipes %}
+                    <div class="col-md-4">
+                        <a href="{% url 'recipe_detail' recipe_id=recipe.pk %}" class="text-decoration-none">
+                            <div class="recipe-item">
+                                {% if recipe.recipeimage_set.all %}
+                                    {% with first_image=recipe.recipeimage_set.first %}
+                                        <img src="{{ first_image.image.url }}" alt="{{ recipe.title }}" class="recipe-image">
+                                    {% endwith %}
+                                {% else %}
+                                    <div class="no-image">No Image</div>
+                                {% endif %}
+                                <h3>{{ recipe.title }}</h3>
+                            </div>
+                        </a>
                     </div>
-                </a>
+                {% endfor %}
             </div>
-        {% endfor %}
-    </div>
         {% else %}
             <p>No recipes found.</p>
         {% endif %}
