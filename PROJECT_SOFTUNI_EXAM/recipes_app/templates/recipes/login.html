@@ -35,17 +35,45 @@
         button:hover {
             background-color: #ff9900;
         }
+        .error-message {
+            color: red;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <h1>Login</h1>
-    <form method="post">
+    <form method="post" id="loginForm">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="error-message" id="loginError">{{ error }}</div>
         <button type="submit">Login</button>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginError = document.getElementById('loginError');
+
+            loginForm.addEventListener('submit', function(event) {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                if (!username || !password) {
+                    event.preventDefault(); // Prevent form submission
+                    loginError.textContent = 'Please enter both username and password.';
+                } else {
+                    loginError.textContent = ''; // Clear any previous error messages
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-

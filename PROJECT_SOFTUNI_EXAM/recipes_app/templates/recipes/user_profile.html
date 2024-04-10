@@ -1,19 +1,71 @@
+<!-- user_profile.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <!-- Add necessary stylesheets and scripts -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        .profile-image {
+            max-width: 200px;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>User Profile</h1>
-        <p>Username: {{ profile.user.username }}</p>
-        <p>Bio: {{ profile.bio }}</p>
-        <!-- Display other profile details as needed -->
 
-        <a href="{% url 'edit_profile' %}" class="btn btn-warning orange-btn">Edit Profile</a>
+        {% if profile %}
+            <p>Username: {{ profile.user.username }}</p>
+            <p>Bio: {{ profile.bio }}</p>
+
+            {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-image">
+            {% else %}
+                <p>No profile picture available</p>
+            {% endif %}
+        {% else %}
+            <p>No profile found</p>
+        {% endif %}
+
+        <a href="{% url 'edit_profile' %}" class="btn btn-warning">Edit Profile</a>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>
+

@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from .models import Recipe, RecipeImage
 # Create your views here.
@@ -197,28 +197,46 @@ def update_recipe(request, recipe_id):
         'image_formset': image_formset
     })
 '''''
+
+
 @login_required
 def update_recipe(request, recipe_id):
+    # Retrieve the recipe object using the provided recipe_id
     recipe = get_object_or_404(Recipe, id=recipe_id)
 
+    # Check if the current user is the author of the recipe
+    if request.user != recipe.author:
+        # If the current user is not the author, render a custom message
+        return render(request, 'recipes/update_access_denied.html', {
+            'recipe': recipe
+        })
+
     if request.method == 'POST':
+        # Populate the forms with the submitted data and instance
         recipe_form = RecipeForm(request.POST, instance=recipe)
         image_formset = RecipeImageFormSet(request.POST, request.FILES, instance=recipe)
 
+        # Validate the forms
         if recipe_form.is_valid() and image_formset.is_valid():
+            # Save the recipe form and associated image formset
             recipe_form.save()
             image_formset.save()
 
+            # Redirect to the recipe detail page after successful update
             return redirect('recipe_detail', recipe_id=recipe.id)
     else:
+        # If it's a GET request or the form data is invalid, display the update form
         recipe_form = RecipeForm(instance=recipe)
         image_formset = RecipeImageFormSet(instance=recipe)
 
+    # Render the update form with the recipe data and formsets
     return render(request, 'recipes/recipe_update.html', {
         'recipe': recipe,
         'recipe_form': recipe_form,
         'image_formset': image_formset
     })
+
+
 def add_review(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
 
@@ -309,3 +327,16 @@ def upload_images(request):
 def limited_crud_view(request):
     # Your view logic here
     return HttpResponse("You have permission to perform this action.")
+
+
+def update_profile(request):
+    if request.method == 'POST':
+        profile = get_object_or_404(Profile, user=request.user)
+        bio = request.POST.get('bio', None)  # Allow for empty bio
+
+        profile.bio = bio
+        profile.save()
+
+        return JsonResponse({'message': 'Profile updated successfully.'})
+
+    return JsonResponse({'message': 'Invalid request method.'}, status=405)

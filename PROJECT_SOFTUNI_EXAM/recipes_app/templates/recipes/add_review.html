@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Review</title>
+    <title>Add Review for {{ recipe.title }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
@@ -39,12 +39,17 @@
         .btn-submit:hover {
             background-color: #0056b3;
         }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Add Review for {{ recipe.title }}</h1>
-        <form method="post">
+        <form method="post" id="reviewForm">
             {% csrf_token %}
             <div class="form-group">
                 <label for="rating">Rating:</label>
@@ -58,6 +63,7 @@
             <div class="form-group">
                 <label for="comment">Comment:</label>
                 <textarea class="form-control" id="comment" name="comment" required></textarea>
+                <div id="commentError" class="error-message"></div>
             </div>
             <button type="submit" class="btn btn-submit">Submit Review</button>
         </form>
@@ -72,6 +78,15 @@
                 $('#rating').val(value); // Update hidden input value
                 $('.rating-stars').removeClass('checked'); // Reset all stars
                 $(this).prevAll().addBack().addClass('checked'); // Fill selected stars
+            });
+
+            // Client-side form validation
+            $('#reviewForm').on('submit', function(event) {
+                var comment = $('#comment').val().trim();
+                if (comment.length === 0) {
+                    $('#commentError').text('Please enter a comment.');
+                    event.preventDefault(); // Prevent form submission
+                }
             });
         });
     </script>

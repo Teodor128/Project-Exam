@@ -6,12 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Images</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-top: 20px;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Upload Images</h1>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
             {% csrf_token %}
             {{ formset.management_form }}
 
@@ -19,9 +49,11 @@
                 <div class="form-group">
                     <label for="{{ form.image.id_for_label }}">Image</label>
                     {{ form.image }}
+                    <small class="text-danger">{{ form.image.errors }}</small>
                     <br>
                     <label for="{{ form.is_main.id_for_label }}">Main Image</label>
                     {{ form.is_main }}
+                    <small class="text-danger">{{ form.is_main.errors }}</small>
                 </div>
             {% endfor %}
 
@@ -33,6 +65,37 @@
                 {{ success_message }}
             </div>
         {% endif %}
+
+        {% if formset.non_form_errors %}
+            <div class="alert alert-danger mt-3" role="alert">
+                {% for error in formset.non_form_errors %}
+                    {{ error }}
+                    <br>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
+
+    <script>
+        function validateForm() {
+            const images = document.querySelectorAll('input[type="file"]');
+            let isValid = true;
+
+            images.forEach(image => {
+                if (!image.value) {
+                    isValid = false;
+                    const errorElement = image.nextElementSibling;
+                    errorElement.textContent = "Please select an image file.";
+                    errorElement.classList.add('text-danger');
+                } else {
+                    const errorElement = image.nextElementSibling;
+                    errorElement.textContent = "";
+                    errorElement.classList.remove('text-danger');
+                }
+            });
+
+            return isValid;
+        }
+    </script>
 </body>
 </html>

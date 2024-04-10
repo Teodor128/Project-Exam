@@ -21,7 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from PROJECT_SOFTUNI_EXAM.recipes_app import views
-from PROJECT_SOFTUNI_EXAM.recipes_app.views import recipe_search
+from PROJECT_SOFTUNI_EXAM.recipes_app.views import recipe_search, update_profile
 
 urlpatterns = [
     path('', views.recipe_list, name='recipe_list'),
@@ -42,10 +42,10 @@ urlpatterns = [
     path('recipe/<int:recipe_id>/add_review/', views.add_review, name='add_review'),
     path('recipe/search/', recipe_search, name='recipe_search'),
     path('admin/', admin.site.urls),
+    path('update_profile/', update_profile, name='update_profile'),
 
 
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

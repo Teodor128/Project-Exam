@@ -1,4 +1,5 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,14 +36,35 @@
         button:hover {
             background-color: #ff9900;
         }
+        .error-message {
+            color: red;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <h1>My Form</h1>
-    <form method="post">
+    <form method="post" id="myForm" onsubmit="return validateForm()">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Submit</button>
     </form>
+
+    <script>
+        function validateForm() {
+            const form = document.getElementById('myForm');
+            const inputs = form.getElementsByTagName('input');
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].hasAttribute('required') && !inputs[i].value) {
+                    const fieldName = inputs[i].getAttribute('name');
+                    alert(`Please enter ${fieldName}`);
+                    return false; // Prevent form submission
+                }
+            }
+
+            return true; // Allow form submission
+        }
+    </script>
 </body>
 </html>

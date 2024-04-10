@@ -4,14 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe Search</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            color: orange;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: orange;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff9900;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Search Recipes</h1>
-        <form method="GET" action="{% url 'recipe_search' %}">
-            {{ form.as_p }}
+        <form method="GET" action="{% url 'recipe_search' %}" onsubmit="return validateSearchForm()">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="query">Search Query:</label>
+                <input type="text" class="form-control" id="query" name="query" required>
+                <div id="queryError" class="error-message"></div>
+            </div>
             <button type="submit">Search</button>
         </form>
     </div>
+
+    <script>
+        function validateSearchForm() {
+            const queryInput = document.getElementById('query');
+            const queryError = document.getElementById('queryError');
+
+            if (!queryInput.value.trim()) {
+                queryError.innerText = "Please enter a search query.";
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 </html>

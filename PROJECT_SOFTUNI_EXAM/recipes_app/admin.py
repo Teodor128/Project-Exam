@@ -1,8 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.
 from .models import Recipe, Review
-
 
 
 @admin.register(Recipe)
@@ -21,3 +21,5 @@ class ReviewAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
 #SuperUser - Username: Teodor128 P_w: Password email teotodorov07@gmail.com
+
+

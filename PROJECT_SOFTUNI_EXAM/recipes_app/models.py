@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser, Group, Permission
 
 from django.db import models
 
@@ -28,13 +28,19 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='recipe_images/', blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
+    description = models.TextField(blank=True, null=True)
 
     def get_first_image_url(self):
         first_image = self.recipeimage_set.first()
         if first_image:
             return first_image.image.url
         else:
-            return '/path/to/default_image.jpg'
+            return 'Github Exam.Project-Exam.media.recipe_images'
+
+    def delete_image(self):
+        # Method to delete the image associated with the recipe
+        if self.image:
+            self.image.delete()
 
     def __str__(self):
         return self.title
@@ -71,3 +77,5 @@ class Profile(models.Model):
 class RecipeImage(models.Model):
     recipe = models.ForeignKey('recipes_app.Recipe', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='recipe_images/', default='default_image.jpg')  # Set default image filename
+
+

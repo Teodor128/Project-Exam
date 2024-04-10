@@ -4,17 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
-    <!-- Add necessary stylesheets and scripts -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Edit Profile</h1>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="editProfileForm">
             {% csrf_token %}
             <div class="form-group">
                 <label for="bio">Bio:</label>
                 <textarea class="form-control" id="bio" name="bio" rows="3">{{ form.bio.value }}</textarea>
+                <div id="bioError" class="error-message"></div>
             </div>
             <div class="form-group">
                 <label for="profile_picture">Profile Picture:</label>
@@ -22,6 +35,7 @@
                 {% if profile.profile_picture %}
                     <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" style="max-width: 200px;">
                 {% endif %}
+                <div id="profilePictureError" class="error-message"></div>
             </div>
             <!-- Add more fields as needed for the Profile model -->
 
@@ -30,5 +44,36 @@
 
         <a href="{% url 'user_profile' %}" class="btn btn-secondary">Cancel</a>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#editProfileForm').on('submit', function(event) {
+                var bio = $('#bio').val().trim();
+                var profilePicture = $('#profile_picture').val();
+
+                // Client-side validation
+                if (bio.length === 0) {
+                    $('#bioError').text('Bio is required.');
+                    event.preventDefault(); // Prevent form submission
+                } else {
+                    $('#bioError').text(''); // Clear error message
+                }
+
+                if (profilePicture && !isValidImageFile(profilePicture)) {
+                    $('#profilePictureError').text('Please upload a valid image file (JPEG, PNG, GIF).');
+                    event.preventDefault(); // Prevent form submission
+                } else {
+                    $('#profilePictureError').text(''); // Clear error message
+                }
+            });
+
+            // Helper function to validate uploaded image file type
+            function isValidImageFile(file) {
+                var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+                return allowedExtensions.test(file);
+            }
+        });
+    </script>
 </body>
 </html>
