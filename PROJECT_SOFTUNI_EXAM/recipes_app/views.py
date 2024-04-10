@@ -79,17 +79,26 @@ def user_profile(request):
 
 @login_required
 def edit_profile(request):
-    try:
-        profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        profile = Profile(user=request.user)  # Create a new Profile if it doesn't exist
-        profile.save()
+    profile = request.user.profile  # Assuming user has a one-to-one relationship with Profile
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
+
         if form.is_valid():
-            form.save()
-            return redirect('user_profile')  # Redirect to user profile after editing
+            bio = form.cleaned_data['bio']
+            profile.bio = bio
+
+            if 'remove_profile_picture' in request.POST:
+                # Check if the user wants to remove the profile picture
+                if request.POST['remove_profile_picture'] == 'on':
+                    profile.profile_picture.delete()  # Delete the profile picture file
+                    profile.profile_picture = None  # Clear the profile picture field
+
+            profile.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('user_profile')
+        else:
+            messages.error(request, 'Failed to update profile. Please check the form.')
     else:
         form = ProfileForm(instance=profile)
 
@@ -130,11 +139,14 @@ def add_recipe(request):
     if request.method == 'POST':
         form = RecipeForm(request.POST, request.FILES)
         if form.is_valid():
-            # Save the new recipe to the database
             recipe = form.save(commit=False)
             form.save_m2m()
             recipe.author = request.user  # Assign the current user as the recipe author
             recipe.save()
+            if 'image' in request.FILES:
+                image = request.FILES['image']
+                RecipeImage.objects.create(recipe=recipe, image=image)
+
             return redirect('recipe_list')  # Redirect to recipe list page after adding the recipe
     else:
         form = RecipeForm()
@@ -219,7 +231,10 @@ def update_recipe(request, recipe_id):
         # Validate the forms
         if recipe_form.is_valid() and image_formset.is_valid():
             # Save the recipe form and associated image formset
-            recipe_form.save()
+            #recipe_form.save()
+
+            updated_recipe = recipe_form.save(commit=False)
+            updated_recipe.save()
             image_formset.save()
 
             # Redirect to the recipe detail page after successful update
@@ -328,7 +343,7 @@ def limited_crud_view(request):
     # Your view logic here
     return HttpResponse("You have permission to perform this action.")
 
-
+'''''
 def update_profile(request):
     if request.method == 'POST':
         profile = get_object_or_404(Profile, user=request.user)
@@ -340,3 +355,57 @@ def update_profile(request):
         return JsonResponse({'message': 'Profile updated successfully.'})
 
     return JsonResponse({'message': 'Invalid request method.'}, status=405)
+'''''
+'''''
+@permission_required('your_app.can_change_specific_data', raise_exception=True)
+def update_profile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            remove_picture = form.cleaned_data['remove_picture']
+
+            if remove_picture:
+                # Clear the profile picture
+                profile.profile_picture.delete(save=False)  # Delete the file from storage
+                profile.profile_picture = None  # Set profile picture field to None
+
+            # Save the form including any changes to the profile
+            form.save()
+            return JsonResponse({'message': 'Profile updated successfully.'})
+        else:
+            # Handle form validation errors
+            return JsonResponse({'error': form.errors}, status=400)
+
+    # If the request method is not POST, return an error response
+    return JsonResponse({'message': 'Invalid request method.'}, status=405)
+'''''
+
+
+@permission_required('your_app.can_change_specific_data', raise_exception=True)
+def update_profile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            # Check if 'remove_picture' field is checked
+            remove_picture = form.cleaned_data.get('remove_picture', False)
+
+            if remove_picture:
+                # Clear the profile picture
+                if profile.profile_picture:  # Check if profile picture exists
+                    profile.profile_picture.delete()  # Delete the file from storage
+                    profile.profile_picture = None  # Set profile picture field to None
+
+            # Save the form including any changes to the profile
+            form.save()
+            return JsonResponse({'message': 'Profile updated successfully.'})
+        else:
+            # Handle form validation errors
+            return JsonResponse({'error': form.errors}, status=400)
+
+    # If the request method is not POST, return an error response
+    return JsonResponse({'message': 'Invalid request method.'}, status=405)
+

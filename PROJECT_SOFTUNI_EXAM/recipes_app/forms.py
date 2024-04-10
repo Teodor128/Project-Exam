@@ -48,6 +48,7 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['bio', 'profile_picture', ] #date of birth
+        clear_profile_picture = forms.BooleanField(required=False, label='Clear Profile Picture')
 
 
 class ReviewForm(forms.ModelForm):
